@@ -1,0 +1,3 @@
+[submodule "AppFood"]
+	path = AppFood
+	url = https://github.com/Cuong-20521151/AppFood.git
