@@ -27,5 +27,8 @@ const dataSchema = new mongoose.Schema({
     foodProcessingType: {
         required: true, type: String
     },
+    userId: {
+        required: true, type: String
+    },
 })
 module.exports = mongoose.model('dishs', dataSchema)

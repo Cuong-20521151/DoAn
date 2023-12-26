@@ -26,6 +26,22 @@ router.get('/getAllCmt', async (req, res) => {
     }
 })
 
+//Get dish by userId
+router.get('/getUserDish/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const user = await Dish.find({ userId: userId });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 //Get by user
 router.get('/getUser', async (req, res) => {
     try{
@@ -87,7 +103,8 @@ router.post('/postDish', async (req, res) => {
         feel: req.body.feel,
         foodRations: req.body.foodRations,
         mealType: req.body.mealType,
-        foodProcessingType: req.body.foodProcessingType
+        foodProcessingType: req.body.foodProcessingType,
+        userId: req.body.userId
     })
 
     try {
@@ -134,8 +151,8 @@ router.post('/postCmt', async (req, res) => {
     const comment = new Comment({
         cmt: req.body.cmt,
         food_id: req.body.food_id,
+        userId: req.body.userId
     })
-
     try {
         const dataToSave = await comment.save();
         res.status(200).json(dataToSave)
