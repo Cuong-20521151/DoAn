@@ -4,6 +4,7 @@ const Dish = require('../models/dish')
 const Comment = require('../models/comment')
 const User = require('../models/user')
 const Save = require('../models/save')
+const Rating = require('../models/rating')
 module.exports = router;
 
 router.get('/getAllDish', async (req, res) => {
@@ -20,6 +21,17 @@ router.get('/getAllDish', async (req, res) => {
 router.get('/getAllCmt', async (req, res) => {
     try{
         const data = await Comment.find();
+        res.json(data)
+    }
+    catch(error){
+        res.status(500).json({message: error.message})
+    }
+})
+
+//Get by ID rating
+router.get('/getAllRating', async (req, res) => {
+    try{
+        const data = await Rating.find();
         res.json(data)
     }
     catch(error){
@@ -220,5 +232,46 @@ router.get('/saved-posts/:userId', async (req, res) => {
         res.status(200).json({ savedPosts });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
+    }
+});
+
+//add Rating
+router.post('/postRating', async (req, res) => {
+    const rating = new Rating({
+        ratings: req.body.ratings,
+        food_id: req.body.food_id,
+        userId: req.body.userId
+    })
+    try {
+        const dataToSave = await rating.save();
+        res.status(200).json(dataToSave)
+    }
+    catch (error) {
+        res.status(400).json({message: error.message})
+    }
+})
+
+//update aveRating
+router.patch('/updateAveRating/:id', async (req, res) => {
+    try {
+        const dishId = req.params.id;
+        const newAveRating = req.body.aveRating; // Giả sử bạn gửi giá trị aveRating mới từ client
+
+        // Tìm bản ghi Dish cần cập nhật
+        const dish = await Dish.findById(dishId);
+
+        if (!dish) {
+            return res.status(404).json({ message: 'Dish not found' });
+        }
+
+        // Cập nhật giá trị aveRating
+        dish.aveRating = newAveRating;
+
+        // Lưu lại bản ghi đã được cập nhật
+        const updatedDish = await dish.save();
+
+        res.status(200).json(updatedDish);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 });
