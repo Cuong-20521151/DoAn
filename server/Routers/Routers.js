@@ -57,7 +57,7 @@ router.get('/getUser', async (req, res) => {
 router.get('/getAllDish/:id', async (req, res) => {
     try {
         const Id = req.params.id; 
-        const data = await Dish.find(Id);
+        const data = await Dish.find({_id : Id});
         res.json(data)
     }
     catch (error) {
