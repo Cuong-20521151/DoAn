@@ -18,10 +18,10 @@ const dataSchema = new mongoose.Schema({
         }
     },
     address:{
-        required: true, type: String
+        type: String
     },
     phone:{
-        required: true, type: Number
+        type: Number
     }
 })
 module.exports = mongoose.model('user', dataSchema)
