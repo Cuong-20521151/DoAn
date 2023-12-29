@@ -5,6 +5,7 @@ const Comment = require('../models/comment')
 const User = require('../models/user')
 const Save = require('../models/save')
 const Rating = require('../models/rating')
+const Flow = require('../models/flow')
 module.exports = router;
 
 router.get('/getAllDish', async (req, res) => {
@@ -81,6 +82,18 @@ router.get('/getAllDish/:id', async (req, res) => {
 router.get('/postAllDish/:userId', async (req, res) => {
     try {
       const userId = req.params.userId;
+      const userPosts = await Dish.find({ userId });
+      res.json(userPosts);
+      
+      
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+// Endpoint API để lấy số lượng bài viết đã đăng của người dùng
+router.get('/user-posts/:userId', async (req, res) => {
+    try {
+      const userId = req.params.userId;
       const userPostsCount = await Dish.countDocuments({ userId }); // Đếm số lượng bài viết từ bảng dishs có userId tương ứng
       res.json({ userPostsCount });
     } catch (error) {
@@ -89,7 +102,7 @@ router.get('/postAllDish/:userId', async (req, res) => {
   });
   
   // Endpoint API để lấy thông tin người dùng và số lượng bài viết đã đăng
-router.get('/user-info/:userId', async (req, res) => {
+  router.get('/user-info/:userId', async (req, res) => {
     try {
       const userId = req.params.userId;
   
@@ -101,6 +114,8 @@ router.get('/user-info/:userId', async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   });
+  
+  module.exports = router;
 // get save_dish by useID
 router.get('/saved-posts/:userId', async (req, res) => {
     try {
@@ -127,33 +142,37 @@ router.post('/Login', async (req, res) => {
 })
 //Post by Signup
 router.post('/Signup', async (req, res) => {
-    const { firstname, lastname, username, password, email } = req.body;
+    const { firstname, lastname, username, password } = req.body;
+    const defaultImageUrl = "https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg";
   
-    // Perform additional validation if needed
-    if (!username || !password ) {
-      return res.status(400).json({ error: 'Please provide all required fields.' });
+    if (!username || !password || !firstname || !lastname) {
+      return res.status(400).json({ error: 'Vui lòng cung cấp đủ thông tin.' });
     }
   
     try {
-      // Check if the user already exists in the database
       const existingUser = await User.findOne({ username });
       if (existingUser) {
-        return res.status(400).json({ error: 'Username already exists. Please choose a different one.' });
+        return res.status(400).json({ error: 'Tên người dùng đã tồn tại. Vui lòng chọn tên khác.' });
       }
   
-      // Create a new user instance using the Mongoose model and save it to the database
       const newUser = new User({
         username,
         password,
+        name: {
+          firstname,
+          lastname,
+        },
+        userImage: defaultImageUrl // Thêm URL mặc định vào trường userImage
       });
   
       await newUser.save();
-      res.status(201).json({ message: 'User created successfully.' });
+      res.status(201).json({ message: 'Người dùng tạo thành công.' });
     } catch (error) {
-      console.error('Error signing up:', error);
-      res.status(500).json({ error: 'Signup failed. Please try again.' });
+      console.error('Lỗi khi đăng ký:', error);
+      res.status(500).json({ error: 'Đăng ký thất bại. Vui lòng thử lại.' });
     }
   });
+  
 
 //Post Method
 router.post('/postDish', async (req, res) => {
@@ -236,6 +255,33 @@ router.post('/postRating', async (req, res) => {
         res.status(400).json({message: error.message})
     }
 })
+// Route để lưu thông tin flow
+router.post('/flows', async (req, res) => {
+    const user_flow = req.body.user_flow;
+    const userId = req.body.userId;
+
+    try {
+        // Kiểm tra xem các trường cần thiết đã được cung cấp chưa và có khác nhau hay không
+        if (!user_flow || !userId || user_flow === userId) {
+            return res.status(400).json({ message: 'Missing required fields or user_flow is the same as userId' });
+        }
+
+        const existingFlow = await Flow.findOne({ user_flow: user_flow, userId: userId });
+
+        if (existingFlow) {
+            // Nếu flow đã tồn tại, xóa flow đó đi
+            await Flow.deleteMany({ user_flow: user_flow, userId: userId });
+            res.status(200).json({ message: 'Deleted existing flow' });
+        } else {
+            // Nếu flow không tồn tại, tạo mới và lưu vào cơ sở dữ liệu
+            const newFlow = new Flow({ user_flow, userId });
+            await newFlow.save();
+            res.status(201).json(newFlow); // Trả về thông tin flow đã lưu thành công
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 ////////////////////////////////////////////////////// Delete //////////////////////////////////////////////////////////////////////
 //Delete by ID Method
 router.delete('/delete/:id', async (req, res) => {
