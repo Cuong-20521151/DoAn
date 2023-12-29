@@ -22,6 +22,9 @@ const dataSchema = new mongoose.Schema({
     },
     phone:{
         required: true, type: Number
-    }
+    },
+    userImage:{
+        required: true, type: String
+    },
 })
 module.exports = mongoose.model('user', dataSchema)
