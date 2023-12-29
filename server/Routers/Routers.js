@@ -77,6 +77,44 @@ router.get('/getAllDish/:id', async (req, res) => {
     }
 })
 
+// get user
+router.get('/postAllDish/:userId', async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const userPostsCount = await Dish.countDocuments({ userId }); // Đếm số lượng bài viết từ bảng dishs có userId tương ứng
+      res.json({ userPostsCount });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Endpoint API để lấy thông tin người dùng và số lượng bài viết đã đăng
+router.get('/user-info/:userId', async (req, res) => {
+    try {
+      const userId = req.params.userId;
+  
+      const user = await User.findById(userId); // Lấy thông tin người dùng từ bảng user
+      const userPostsCount = await Dish.countDocuments({ userId }); // Đếm số lượng bài viết từ bảng dishs có userId tương ứng
+  
+      res.json({ user, userPostsCount });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+// get save_dish by useID
+router.get('/saved-posts/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        // Tìm tất cả các bản ghi trong collection Save mà có userId tương ứng
+        const savedPosts = await Save.find({ userId });
+
+        res.status(200).json({ savedPosts });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+//////////////////////////////////////////////////////// Post /////////////////////////////////////////////////////////////////////////////
 //Post by user
 router.post('/Login', async (req, res) => {
     try{
@@ -92,7 +130,7 @@ router.post('/Signup', async (req, res) => {
     const { firstname, lastname, username, password, email } = req.body;
   
     // Perform additional validation if needed
-    if (!firstname || !lastname || !username || !password || !email) {
+    if (!username || !password ) {
       return res.status(400).json({ error: 'Please provide all required fields.' });
     }
   
@@ -105,10 +143,8 @@ router.post('/Signup', async (req, res) => {
   
       // Create a new user instance using the Mongoose model and save it to the database
       const newUser = new User({
-        name: { firstname, lastname },
         username,
         password,
-        email,
       });
   
       await newUser.save();
@@ -142,54 +178,6 @@ router.post('/postDish', async (req, res) => {
         res.status(400).json({message: error.message})
     }
 })
-
-//Delete by ID Method
-router.delete('/delete/:id', async (req, res) => {
-    try {
-        const id = req.params.id;
-        console.log(id)
-        const data = await Dish.findByIdAndDelete(id)
-        res.send(`Document with ${data.name} has been deleted..`)
-    }
-    catch (error) {
-        res.status(400).json({ message: error.message })
-    }
-})
-//Update by ID Method
-router.patch('/update/:id', async (req, res) => {
-    try {
-        const id = req.params.id;
-        const updatedData = req.body;
-        const options = { new: true };
-
-        const result = await Dish.findByIdAndUpdate(
-            id, updatedData, options
-        )
-
-        res.send(result)
-    }
-    catch (error) {
-        res.status(400).json({ message: error.message })
-    }
-})
-// Update by User 
-router.patch('/updateUser/:id', async (req, res) => {
-    try {
-        const id = req.params.id;
-        const updatedData = req.body;
-        const options = { new: true };
-
-        const result = await User.findByIdAndUpdate(
-            id, updatedData, options
-        )
-
-        res.send(result)
-    }
-    catch (error) {
-        res.status(400).json({ message: error.message })
-    }
-})
-
 //add comment
 router.post('/postCmt', async (req, res) => {
     const comment = new Comment({
@@ -233,20 +221,6 @@ router.post('/postSaveDish', async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 })
-// get save_dish by useID
-router.get('/saved-posts/:userId', async (req, res) => {
-    try {
-        const userId = req.params.userId;
-
-        // Tìm tất cả các bản ghi trong collection Save mà có userId tương ứng
-        const savedPosts = await Save.find({ userId });
-
-        res.status(200).json({ savedPosts });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }
-});
-
 //add Rating
 router.post('/postRating', async (req, res) => {
     const rating = new Rating({
@@ -262,6 +236,58 @@ router.post('/postRating', async (req, res) => {
         res.status(400).json({message: error.message})
     }
 })
+////////////////////////////////////////////////////// Delete //////////////////////////////////////////////////////////////////////
+//Delete by ID Method
+router.delete('/delete/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        console.log(id)
+        const data = await Dish.findByIdAndDelete(id)
+        res.send(`Document with ${data.name} has been deleted..`)
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+})
+
+/////////////////////////////////////////////// update /////////////////////////////////////////////////////////////////////////
+//Update by ID Method
+router.patch('/update/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const updatedData = req.body;
+        const options = { new: true };
+
+        const result = await Dish.findByIdAndUpdate(
+            id, updatedData, options
+        )
+
+        res.send(result)
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+})
+
+//////////////////////////////////////////////////////////////// patch /////////////////////////////////////////////////////////////////////////////////////////
+// Update by User 
+router.patch('/updateUser/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const updatedData = req.body;
+        const options = { new: true };
+
+        const result = await User.findByIdAndUpdate(
+            id, updatedData, options
+        )
+
+        res.send(result)
+    }
+    catch (error) {
+        res.status(400).json({ message: error.message })
+    }
+})
+
 
 //update aveRating
 router.patch('/updateAveRating/:id', async (req, res) => {
