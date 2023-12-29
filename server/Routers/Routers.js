@@ -4,6 +4,7 @@ const Dish = require('../models/dish')
 const Comment = require('../models/comment')
 const User = require('../models/user')
 const Save = require('../models/save')
+const Rating = require('../models/rating')
 module.exports = router;
 
 router.get('/getAllDish', async (req, res) => {
@@ -20,6 +21,17 @@ router.get('/getAllDish', async (req, res) => {
 router.get('/getAllCmt', async (req, res) => {
     try{
         const data = await Comment.find();
+        res.json(data)
+    }
+    catch(error){
+        res.status(500).json({message: error.message})
+    }
+})
+
+//Get by ID rating
+router.get('/getAllRating', async (req, res) => {
+    try{
+        const data = await Rating.find();
         res.json(data)
     }
     catch(error){
@@ -77,23 +89,35 @@ router.post('/Login', async (req, res) => {
 })
 //Post by Signup
 router.post('/Signup', async (req, res) => {
-    const dish = new User({
-        name: {
-            firstname: req.body.name.firstname,
-            lastname: req.body.name.lastname,
-        },
-        username: req.body.username,
-        password: req.body.password
-    })
-
+    const { firstname, lastname, username, password, email } = req.body;
+  
+    // Perform additional validation if needed
+    if (!firstname || !lastname || !username || !password || !email) {
+      return res.status(400).json({ error: 'Please provide all required fields.' });
+    }
+  
     try {
-        const dataToSave = await dish.save();
-        res.status(200).json(dataToSave)
+      // Check if the user already exists in the database
+      const existingUser = await User.findOne({ username });
+      if (existingUser) {
+        return res.status(400).json({ error: 'Username already exists. Please choose a different one.' });
+      }
+  
+      // Create a new user instance using the Mongoose model and save it to the database
+      const newUser = new User({
+        name: { firstname, lastname },
+        username,
+        password,
+        email,
+      });
+  
+      await newUser.save();
+      res.status(201).json({ message: 'User created successfully.' });
+    } catch (error) {
+      console.error('Error signing up:', error);
+      res.status(500).json({ error: 'Signup failed. Please try again.' });
     }
-    catch (error) {
-        res.status(400).json({message: error.message})
-    }
-})
+  });
 
 //Post Method
 router.post('/postDish', async (req, res) => {
@@ -220,5 +244,46 @@ router.get('/saved-posts/:userId', async (req, res) => {
         res.status(200).json({ savedPosts });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
+    }
+});
+
+//add Rating
+router.post('/postRating', async (req, res) => {
+    const rating = new Rating({
+        ratings: req.body.ratings,
+        food_id: req.body.food_id,
+        userId: req.body.userId
+    })
+    try {
+        const dataToSave = await rating.save();
+        res.status(200).json(dataToSave)
+    }
+    catch (error) {
+        res.status(400).json({message: error.message})
+    }
+})
+
+//update aveRating
+router.patch('/updateAveRating/:id', async (req, res) => {
+    try {
+        const dishId = req.params.id;
+        const newAveRating = req.body.aveRating; // Giả sử bạn gửi giá trị aveRating mới từ client
+
+        // Tìm bản ghi Dish cần cập nhật
+        const dish = await Dish.findById(dishId);
+
+        if (!dish) {
+            return res.status(404).json({ message: 'Dish not found' });
+        }
+
+        // Cập nhật giá trị aveRating
+        dish.aveRating = newAveRating;
+
+        // Lưu lại bản ghi đã được cập nhật
+        const updatedDish = await dish.save();
+
+        res.status(200).json(updatedDish);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 });
