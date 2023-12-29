@@ -30,5 +30,9 @@ const dataSchema = new mongoose.Schema({
     userId: {
         required: true, type: String
     },
+    aveRating: {
+        required: true, type: Number
+    },
+    
 })
 module.exports = mongoose.model('dishs', dataSchema)
