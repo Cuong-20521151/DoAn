@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const dataSchema = new mongoose.Schema({
     email:{
-        required: true, type: String
+        type: String
     },
     username:{
         required: true, type: String
@@ -11,10 +11,10 @@ const dataSchema = new mongoose.Schema({
     },
     name:{
         firstname:{
-            required: true, type: String
+            type: String
         },
         lastname:{
-            required: true, type: String
+            type: String
         }
     },
     address:{
@@ -24,7 +24,7 @@ const dataSchema = new mongoose.Schema({
         type: Number
     },
     userImage:{
-        required: true, type: String
+        type: String
     },
 })
 module.exports = mongoose.model('user', dataSchema)
