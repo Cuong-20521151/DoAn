@@ -129,6 +129,19 @@ router.get('/saved-posts/:userId', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+// get flow by useID
+router.get('/getFlows/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        // Tìm tất cả các bản ghi trong collection Save mà có userId tương ứng
+        const savedPosts = await Flow.find({ userId });
+
+        res.status(200).json({ savedPosts });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 //////////////////////////////////////////////////////// Post /////////////////////////////////////////////////////////////////////////////
 //Post by user
 router.post('/Login', async (req, res) => {
