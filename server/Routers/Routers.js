@@ -186,7 +186,8 @@ router.post('/postDish', async (req, res) => {
         foodRations: req.body.foodRations,
         mealType: req.body.mealType,
         foodProcessingType: req.body.foodProcessingType,
-        userId: req.body.userId
+        userId: req.body.userId,
+        aveRating: req.body.aveRating
     })
 
     try {
