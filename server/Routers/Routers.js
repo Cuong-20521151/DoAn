@@ -66,6 +66,16 @@ router.get('/getUser', async (req, res) => {
         res.status(500).json({message: error.message})
     }
 })
+router.get('/getUser/:id', async (req, res) => {
+    const Id = req.params.id
+    try{
+        const data = await User.find({_id: Id});
+        res.json(data)
+    }
+    catch(error){
+        res.status(500).json({message: error.message})
+    }
+})
 // get dish by food_id
 router.get('/getAllDish/:id', async (req, res) => {
     try {
@@ -219,6 +229,7 @@ router.post('/postSaveDish', async (req, res) => {
     const userId = req.body.userId;
 
     try {
+        
         let save_dish = await Save.findOne({ food_id: foodId, userId: userId });
 
         if (save_dish) {
