@@ -66,6 +66,16 @@ router.get('/getUser', async (req, res) => {
         res.status(500).json({message: error.message})
     }
 })
+router.get('/getUser/:id', async (req, res) => {
+    const Id = req.params.id
+    try{
+        const data = await User.find({_id: Id});
+        res.json(data)
+    }
+    catch(error){
+        res.status(500).json({message: error.message})
+    }
+})
 // get dish by food_id
 router.get('/getAllDish/:id', async (req, res) => {
     try {
@@ -129,19 +139,6 @@ router.get('/saved-posts/:userId', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
-// get flow by useID
-router.get('/getFlows/:userId', async (req, res) => {
-    try {
-        const userId = req.params.userId;
-
-        // Tìm tất cả các bản ghi trong collection Save mà có userId tương ứng
-        const savedPosts = await Flow.find({ userId });
-
-        res.status(200).json({ savedPosts });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }
-});
 //////////////////////////////////////////////////////// Post /////////////////////////////////////////////////////////////////////////////
 //Post by user
 router.post('/Login', async (req, res) => {
@@ -199,7 +196,8 @@ router.post('/postDish', async (req, res) => {
         foodRations: req.body.foodRations,
         mealType: req.body.mealType,
         foodProcessingType: req.body.foodProcessingType,
-        userId: req.body.userId
+        userId: req.body.userId,
+        aveRating: req.body.aveRating
     })
 
     try {
@@ -231,6 +229,7 @@ router.post('/postSaveDish', async (req, res) => {
     const userId = req.body.userId;
 
     try {
+        
         let save_dish = await Save.findOne({ food_id: foodId, userId: userId });
 
         if (save_dish) {
