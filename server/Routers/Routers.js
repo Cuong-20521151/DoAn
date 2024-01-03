@@ -92,7 +92,7 @@ router.get('/getAllDish/:id', async (req, res) => {
 router.get('/postAllDish/:userId', async (req, res) => {
     try {
       const userId = req.params.userId;
-      const userPosts = await Dish.find({ userId });
+      const userPosts = await Dish.find({ userId: userId });
       res.json(userPosts);
       
       
@@ -127,18 +127,29 @@ router.get('/user-posts/:userId', async (req, res) => {
   
   module.exports = router;
 // get save_dish by useID
-router.get('/saved-posts/:userId', async (req, res) => {
+router.get('/saved-posts/:id', async (req, res) => {
+    const userId = req.params.id;
     try {
-        const userId = req.params.userId;
-
         // Tìm tất cả các bản ghi trong collection Save mà có userId tương ứng
-        const savedPosts = await Save.find({ userId });
+        const savedPosts = await Save.find({ userId: userId });
 
         res.status(200).json({ savedPosts });
     } catch (error) {
         res.status(500).json({ message: 'Server error' });
     }
 });
+
+router.get('/getFlows/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    try {
+
+      const user = await Flow.find({userId: userId}); // Lấy thông tin người dùng từ bảng user
+      
+      res.status(200).json({ user });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 //////////////////////////////////////////////////////// Post /////////////////////////////////////////////////////////////////////////////
 //Post by user
 router.post('/Login', async (req, res) => {
