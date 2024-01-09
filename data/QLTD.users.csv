@@ -1,0 +1,8 @@
+_id,email,username,password,name.firstname,name.lastname,address,phone,userImage,__v
+65847078c932ddea4a36487a,user1@example.com,user1,password1,First1,Last1,Address,12345678901234567000,https://toplist.vn/images/800px/duong-huy-khai-54123.jpg,
+658470d2a5eb7a8f3b17483e,user2@example.com,user2,password2,First2,Last2,Address 2,9876543210,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4Bm99hG-hNfSrRS3CLH3VEQiihTRw8EwKjg&usqp=CAU,
+65847104a5eb7a8f3b17483f,user3@example.com,user3,password3,First3,Last3,Address 3,5551234567,https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3mLcyWusaTH17S0r_PsqzQe-cHWUHXc5COw&usqp=CAU,
+658fcac074ed07d2b7e55324,,Dung,Q,Dung,Lê,,,https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg,0
+6598b4d95e4db66a2f503db2,,Dung123,123,Dũng,Lê Quốc ,Hồ Chí Minh ,,https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg,0
+659c15a121b12625cc39354e,,Dung1,123,Le ,Dung1,,,https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg,0
+659c166321b12625cc393571,,Dung12,123,Lê,Dung,Hồ Chí Minh ,,https://5.imimg.com/data5/ANDROID/Default/2021/1/WP/TS/XB/27732288/product-jpeg.jpg,0
